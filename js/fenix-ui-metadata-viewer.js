@@ -1,15 +1,15 @@
 define(['jquery',
-        'handlebars',
-        'faostat_commons',
-        'FAOSTAT_THEME',
-        'fx-report',
-        'text!fenix_ui_metadata_viewer/html/templates.hbs',
-        'i18n!fenix_ui_metadata_viewer/nls/translate',
-        'text!fenix_ui_metadata_viewer/config/application_settings.json',
-        'sweetAlert',
-        'jsonEditor'
-        ], function ($, Handlebars, FAOSTATCommons, FAOSTAT_THEME, FENIX_UI_REPORTS,
-                     templates, translate, application_settings, sweetAlert) {
+    'handlebars',
+    'faostat_commons',
+    'FAOSTAT_THEME',
+    'fx-report',
+    'text!fenix_ui_metadata_viewer/html/templates.hbs',
+    'i18n!fenix_ui_metadata_viewer/nls/translate',
+    'text!fenix_ui_metadata_viewer/config/application_settings.json',
+    'sweetAlert',
+    'jsonEditor'
+], function ($, Handlebars, FAOSTATCommons, FAOSTAT_THEME, FENIX_UI_REPORTS,
+             templates, translate, application_settings, sweetAlert) {
 
     'use strict';
 
@@ -169,21 +169,22 @@ define(['jquery',
     };
 
     FUIMDV.prototype.export_pdf = function() {
+        var self = this;
         $('#export_pdf_button').click({url_pdf_service: this.CONFIG.url_pdf_service,
-                                       uid: this.CONFIG.domain,
-                                       lang: this.CONFIG.lang,
-                                       filename: 'FAOSTAT_metadata_' + this.CONFIG.domain + '_' + this.CONFIG.lang + '.pdf'}, function(e) {
+            uid: this.CONFIG.domain,
+            lang: this.CONFIG.lang,
+            filename: 'Metadata_' + this.CONFIG.domain + '_' + this.CONFIG.lang + '.pdf'}, function(e) {
             var url = e.data.url_pdf_service;
             var payload = {
                 input: {
                     config: {
-                        uid: e.data.uid
+                        uid: self.CONFIG.data.meIdentification.uid
                     }
                 },
                 output: {
                     config: {
                         lang: e.data.lang.toUpperCase(),
-                        fileName: e.data.filename
+                        fileName: 'Metadata_'+ self.CONFIG.data.meIdentification.title_fenix[e.data.lang.toUpperCase()] + '_' +e.data.lang.toUpperCase()+ '.pdf'
                     }
                 }
             };
