@@ -175,6 +175,9 @@ define(['jquery',
             lang: this.CONFIG.lang,
             filename: 'Metadata_' + this.CONFIG.domain + '_' + this.CONFIG.lang + '.pdf'}, function(e) {
             var url = e.data.url_pdf_service;
+            var fileName = 'Metadata_'+ self.CONFIG.data.meIdentification.title_fenix[self.CONFIG.lang.toUpperCase()] + '_' +e.data.lang.toUpperCase()+ '.pdf';
+            // remove string for chrome bug fix:
+            fileName = fileName.replace(",","_");
             var payload = {
                 input: {
                     config: {
@@ -184,7 +187,7 @@ define(['jquery',
                 output: {
                     config: {
                         lang: e.data.lang.toUpperCase(),
-                        fileName: 'Metadata_'+ self.CONFIG.data.meIdentification.title_fenix[e.data.lang.toUpperCase()] + '_' +e.data.lang.toUpperCase()+ '.pdf'
+                        fileName: fileName
                     }
                 }
             };
