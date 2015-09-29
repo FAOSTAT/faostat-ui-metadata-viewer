@@ -18,6 +18,7 @@ define(['jquery',
             },
             metadataOptions: {
                 PROPERTIES_ATTR : 'properties',
+                TYPE_ATTRIBUTE : 'type',
                 SORTABLE_ATTRIBUTE: 'propertyOrder',
                 STRING_TYPE: 'string',
                 NUMBER_TYPE: 'number',
@@ -30,13 +31,15 @@ define(['jquery',
                 TITLE_I18N: 'title_i18n',
                 TITLE_DEFAULT: 'title',
                 DESC_I18N: 'description_i18n',
-                DESC_DEFAULT: 'description'
+                DESC_DEFAULT: 'description',
+                ITEMS_PROPERTIES : 'items',
+                SUBSTR_ROOT_DEFINITIONS : 14
 
             }
 
         }
 
-        function ModelCreator() {
+            function ModelCreator() {
         };
 
         /*
@@ -233,9 +236,6 @@ define(['jquery',
         ModelCreator.prototype._prepareInternModelData = function (data, metadata) {
 
             var result = {};
-
-
-
             //1 : sort
             //2 : identification fo case:
             //3: handle different cases
@@ -263,7 +263,7 @@ define(['jquery',
 
                         else if (this._existsPatternProperties(metadata[attribute])) {
                             result[attribute] = this._addPatternModel(metadata[attribute], data[attribute], attribute);
-
+                            result[attribute]['value'] = (data[attribute][(this.$lang).toUpperCase()])?  data[attribute][(this.$lang).toUpperCase()] :  data[attribute][(s.defaultOptions.DEFAULT_LANG).toUpperCase()];
                         }
 
                         else if (this._existsAReference(metadata[attribute])) {
@@ -271,11 +271,22 @@ define(['jquery',
                             var refAttribute = this._getAttributeFromReference(metadata[attribute]);
                             result[attribute]['value'] = this._prepareInternModelData(data[attribute], this.$definitions[refAttribute]);
 
-                            /* result[attribute] = this._addRecursiveModel(metadata[attribute],attribute);
-                             result['value'] = this._prepareInternModelData(data[attribute], metadata[attribute][s.metadataOptions.PROPERTIES_ATTR])*/
-
                         }
 
+                    }
+                    else if(this._isAnArrayAttribute(metadata[attribute])) {
+                        result[attribute] = this._addRecursiveModel(metadata[attribute], attribute);
+
+                        if(this._isASimpleArrayItem(metadata[attribute])){
+                            result[attribute]['value'] = data[attribute];
+                        }
+                        else if(this._isARefArrayItem(metadata[attribute])){
+                            result[attribute]['value'] = [];
+                            var refAttribute = this._getAttributeFromReference(metadata[attribute][s.metadataOptions.ITEMS_PROPERTIES]);
+                            for(var i= 0, length = data[attribute].length; i<length; i++) {
+                                result[attribute]['value'].push(this._prepareInternModelData(data[attribute][i],this.$definitions[refAttribute][s.metadataOptions.PROPERTIES_ATTR]));
+                            }
+                        }
 
                     }
                 }
@@ -301,9 +312,12 @@ define(['jquery',
 
 
         ModelCreator.prototype._isObjectAttribute = function( objectMetadata) {
-            return objectMetadata.hasOwnProperty('type') &&  objectMetadata['type'] === s.metadataOptions.OBJECT_TYPE;
+            return objectMetadata.hasOwnProperty(s.metadataOptions.TYPE_ATTRIBUTE) &&  objectMetadata[s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.OBJECT_TYPE;
         };
 
+        ModelCreator.prototype._isAnArrayAttribute = function (objectMetadata) {
+            return objectMetadata.hasOwnProperty(s.metadataOptions.TYPE_ATTRIBUTE) &&  objectMetadata[s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.ARRAY_TYPE;
+        };
 
         ModelCreator.prototype._addRecursiveModel = function (metadata,  attribute) {
             var result = {};
@@ -352,17 +366,33 @@ define(['jquery',
         };
 
         ModelCreator.prototype._getAttributeFromReference = function (objectMetadata) {
-            return objectMetadata[s.metadataOptions.REF_TYPE].substr(14)
+            return objectMetadata[s.metadataOptions.REF_TYPE].substr(s.metadataOptions.SUBSTR_ROOT_DEFINITIONS)
         };
 
 
         ModelCreator.prototype._isCaseBase = function (objectMetadata) {
 
             return objectMetadata.hasOwnProperty('type') && (
-                objectMetadata['type'] === s.metadataOptions.STRING_TYPE ||
-                objectMetadata['type'] === s.metadataOptions.NUMBER_TYPE ||
-                objectMetadata['type'] === s.metadataOptions.BOOLEAN_TYPE)
+                objectMetadata[s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.STRING_TYPE ||
+                objectMetadata[s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.NUMBER_TYPE ||
+                objectMetadata[s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.BOOLEAN_TYPE)
         };
+
+
+        ModelCreator.prototype._isASimpleArrayItem = function (objectMetadata) {
+            return objectMetadata.hasOwnProperty(s.metadataOptions.ITEMS_PROPERTIES) && (
+                objectMetadata[s.metadataOptions.ITEMS_PROPERTIES][s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.STRING_TYPE ||
+                objectMetadata[s.metadataOptions.ITEMS_PROPERTIES][s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.NUMBER_TYPE ||
+                objectMetadata[s.metadataOptions.ITEMS_PROPERTIES][s.metadataOptions.TYPE_ATTRIBUTE] === s.metadataOptions.BOOLEAN_TYPE)
+        };
+
+
+        ModelCreator.prototype._isARefArrayItem = function (objectMetadata) {
+            return objectMetadata.hasOwnProperty(s.metadataOptions.ITEMS_PROPERTIES) &&
+                objectMetadata[s.metadataOptions.ITEMS_PROPERTIES][s.metadataOptions.REF_TYPE]  &&
+                Object.keys( objectMetadata[s.metadataOptions.ITEMS_PROPERTIES][s.metadataOptions.REF_TYPE]).length >0
+        };
+
 
 
         /*  ModelCreator.prototype._sortPropertyOrder = function (values) {
