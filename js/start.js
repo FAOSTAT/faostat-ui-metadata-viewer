@@ -1,14 +1,15 @@
 /*global define, JSONEditor*/
 define(['jquery',
-    'handlebars',
-    'FAOSTAT_THEME',
-    'fx-report',
-    'text!fenix_ui_metadata_viewer/html/templates.hbs',
-    'i18n!fenix_ui_metadata_viewer/nls/translate',
-    'text!fenix_ui_metadata_viewer/config/application_settings.json',
-    'sweetAlert',
-    'jsonEditor'
-], function ($, Handlebars, FAOSTAT_THEME, FENIX_UI_REPORTS,
+        'handlebars',
+        'globals/Common',
+        'FAOSTAT_THEME',
+        'fx-report',
+        'text!fenix_ui_metadata_viewer/html/templates.hbs',
+        'i18n!fenix_ui_metadata_viewer/nls/translate',
+        'text!fenix_ui_metadata_viewer/config/application_settings.json',
+        'sweetAlert',
+        'jsonEditor'
+], function ($, Handlebars, Common, FAOSTAT_THEME, FENIX_UI_REPORTS,
              templates, translate, application_settings, swal) {
 
     'use strict';
@@ -183,8 +184,8 @@ define(['jquery',
         $('#export_pdf_button').off();
         $('#export_pdf_button').click({url_pdf_service: this.CONFIG.url_pdf_service,
             uid: this.CONFIG.domain,
-            lang: this.CONFIG.lang,
-            filename: 'FAOSTAT_metadata_' + this.CONFIG.domain + '_' + this.CONFIG.lang + '.pdf'}, function (e) {
+            lang: Common.getLocale(),
+            filename: 'FAOSTAT_metadata_' + this.CONFIG.domain + '_' + Common.getLocale() + '.pdf'}, function (e) {
             var url = e.data.url_pdf_service,
                 payload = {
                     input: {
