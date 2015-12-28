@@ -78,10 +78,17 @@ define(['jquery',
                 }
 
                 /* Create data. */
-                var data = that.create_data(response);
+                if (response !== null && response !== undefined) {
 
-                /* Create JSON editor. */
-                that.create_json_editor(schema, data);
+                    /* Create data. */
+                    var data = that.create_data(response);
+
+                    /* Create JSON editor. */
+                    that.create_json_editor(schema, data);
+
+                } else {
+                    that.CONFIG.container.html('<h1 class="text-center">' + translate.no_metadata_available + '</h1>');
+                }
 
             });
 
@@ -132,7 +139,7 @@ define(['jquery',
     FUIMDV.prototype.create_json_schema = function (metadata_structure) {
 
         /* Variables. */
-        var schema, i, tmp;
+        var schema, i, tmp, section;
 
         /* Create schema. */
         schema = {};
@@ -142,9 +149,11 @@ define(['jquery',
 
         /* Iterate over the metadata structure. */
         for (i = 0; i < metadata_structure.length; i += 1) {
-            if (schema.properties[parseInt(metadata_structure[i].MetadataCode, 10)] === undefined) {
-                schema.properties[parseInt(metadata_structure[i].MetadataCode, 10)] = {
+            section = parseInt(metadata_structure[i].MetadataCode, 10);
+            if (schema.properties[section] === undefined) {
+                schema.properties[section] = {
                     type: 'object',
+                    propertyOrder: section,
                     title: 'Section ' + parseInt(metadata_structure[i].MetadataCode, 10),
                     properties: {}
                 };
