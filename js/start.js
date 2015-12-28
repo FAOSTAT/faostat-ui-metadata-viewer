@@ -27,6 +27,8 @@ define(['jquery',
             url_wds_table: 'http://fenixapps2.fao.org/wds_5.1/rest/table/json',
             url_d3s: 'http://faostat3.fao.org/d3s2/v2/msd/resources/metadata/uid',
             rendered: false,
+            url_get_metadata: 'http://faostat3.fao.org/mdfaostat/getmd/',
+            url_get_domain: 'http://faostat3.fao.org/mdfaostat/getdomain/',
 
             /* Events to destroy. */
             callback: {
@@ -88,6 +90,8 @@ define(['jquery',
     };
 
     FUIMDV.prototype.create_json_editor = function (schema, data) {
+
+        /* Init editor. */
         var editor = new JSONEditor(this.CONFIG.container[0], {
             schema: schema,
             theme: 'bootstrap3',
@@ -104,15 +108,23 @@ define(['jquery',
         });
         editor.setValue(data);
         editor.disable();
+
         /* Remove unwanted labels. */
         this.CONFIG.container.find('div:first').find('h3:first').empty();
         this.CONFIG.container.find('div:first').find('p:first').empty();
+
+        /* Collapse editor. */
+        this.CONFIG.container.find('.btn.btn-default.json-editor-btn-collapse').click();
+
     };
 
     FUIMDV.prototype.create_data = function (metadata) {
         var data = {}, i;
         for (i = 0; i < metadata.length; i += 1) {
-            data[metadata[i].MetadataCode] = metadata[i].MetadataText;
+            if (data[parseInt(metadata[i].MetadataCode, 10)] === undefined) {
+                data[parseInt(metadata[i].MetadataCode, 10)] = {};
+            }
+            data[parseInt(metadata[i].MetadataCode, 10)][metadata[i].MetadataCode] = metadata[i].MetadataText;
         }
         return data;
     };
@@ -130,11 +142,19 @@ define(['jquery',
 
         /* Iterate over the metadata structure. */
         for (i = 0; i < metadata_structure.length; i += 1) {
+            if (schema.properties[parseInt(metadata_structure[i].MetadataCode, 10)] === undefined) {
+                schema.properties[parseInt(metadata_structure[i].MetadataCode, 10)] = {
+                    type: 'object',
+                    title: 'Section ' + parseInt(metadata_structure[i].MetadataCode, 10),
+                    properties: {}
+                };
+            }
             tmp = {};
             tmp.type = 'string';
+            tmp.format = 'textarea';
             tmp.title = metadata_structure[i].Label;
             tmp.description = metadata_structure[i].Description;
-            schema.properties[metadata_structure[i].MetadataCode] = tmp;
+            schema.properties[parseInt(metadata_structure[i].MetadataCode, 10)].properties[metadata_structure[i].MetadataCode] = tmp;
         }
 
         /* Return the schema definition. */
@@ -144,14 +164,14 @@ define(['jquery',
 
     FUIMDV.prototype.get_metadata_structure = function () {
         return Q($.ajax({
-            url: 'http://faostat3.fao.org/mdfaostat/getmd/',
+            url: this.CONFIG.url_get_metadata,
             type: 'GET'
         }));
     };
 
     FUIMDV.prototype.get_metadata = function () {
         return Q($.ajax({
-            url: 'http://faostat3.fao.org/mdfaostat/getdomain/',
+            url: this.CONFIG.url_get_domain,
             type: 'GET',
             data: {
                 domaincode: this.CONFIG.domain
