@@ -1,19 +1,21 @@
 /*global define, JSONEditor*/
 define(['jquery',
-        'handlebars',
-        'globals/Common',
+        'loglevel',
+        'faostat-ui/globals/Common',
+        'faostat-ui/config/Events',
         'text!fenix_ui_metadata_viewer/html/templates.hbs',
         'i18n!fenix_ui_metadata_viewer/nls/translate',
-        'sweetAlert',
         'q',
         'jsonEditor'
-    ], function ($, Handlebars, Common, templates, translate, swal, Q) {
+    ], function ($, log, Common, E, templates, translate, Q) {
 
     'use strict';
 
     function FUIMDV() {
 
         this.CONFIG = {
+
+            // TODO: pass the configuration!
 
             lang: 'en',
             edit: false,
