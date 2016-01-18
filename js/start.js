@@ -1,4 +1,4 @@
-/*global define, JSONEditor*/
+/*global define, JSONEditor, amplify*/
 define(['jquery',
         'loglevel',
         'faostat-ui/globals/Common',
@@ -6,7 +6,8 @@ define(['jquery',
         'text!fenix_ui_metadata_viewer/html/templates.hbs',
         'i18n!fenix_ui_metadata_viewer/nls/translate',
         'q',
-        'jsonEditor'
+        'jsonEditor',
+        'amplify'
     ], function ($, log, Common, E, templates, translate, Q) {
 
     'use strict';
@@ -60,6 +61,8 @@ define(['jquery',
         }
         that.CONFIG.container.empty();
 
+        amplify.publish(E.LOADING_SHOW, {container: that.CONFIG.container});
+
         /* Get metadata structure. */
         this.get_metadata_structure().then(function (response) {
 
@@ -73,6 +76,10 @@ define(['jquery',
 
             /* Fetch data. */
             that.get_metadata().then(function (response) {
+
+                /* hiding loading and cleaning the container */
+                amplify.publish(E.LOADING_HIDE, {container: that.CONFIG.container});
+                that.CONFIG.container.empty();
 
                 /* Cast response, if required. */
                 if (typeof response === 'string') {
