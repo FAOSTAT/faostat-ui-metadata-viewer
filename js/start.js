@@ -96,7 +96,7 @@ define(['jquery',
                     that.create_json_editor(schema, data);
 
                 } else {
-                    that.CONFIG.container.html('<h1 class="text-center">' + translate.no_metadata_available + '</h1>');
+                    that.CONFIG.container.html('<h3 class="text-center">' + translate.no_metadata_available + '</h1>');
                 }
 
             });
