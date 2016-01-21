@@ -1,8 +1,8 @@
 /*global define, JSONEditor, amplify*/
 define(['jquery',
         'loglevel',
-        'faostat-ui/globals/Common',
-        'faostat-ui/config/Events',
+        'globals/Common',
+        'config/Events',
         'text!fenix_ui_metadata_viewer/html/templates.hbs',
         'i18n!fenix_ui_metadata_viewer/nls/translate',
         'q',
