@@ -24,12 +24,8 @@ define(['jquery',
             schema: null,
             data: null,
             application_name: 'faostat',
-            placeholder_id: 'placeholder',
-            url_mdsd: 'http://faostat3.fao.org/d3s2/v2/mdsd',
+            container: 'placeholder',
             url_pdf_service: 'http://fenixapps2.fao.org/fenixExport',
-            url_wds_table: 'http://fenixapps2.fao.org/wds_5.1/rest/table/json',
-            url_d3s: 'http://faostat3.fao.org/d3s2/v2/msd/resources/metadata/uid',
-            rendered: false,
             url_get_metadata: 'http://faostat3.fao.org/mdfaostat/getmd/',
             url_get_domain: 'http://faostat3.fao.org/mdfaostat/getdomain/',
 
@@ -54,10 +50,10 @@ define(['jquery',
         var that = this;
 
         /* Clear previous editor, if any. */
-        if (that.CONFIG.hasOwnProperty('placeholder')) {
-            that.CONFIG.container =  $(that.CONFIG.placeholder);
+        if (that.CONFIG.hasOwnProperty('container')) {
+            that.CONFIG.container = $(that.CONFIG.container);
         } else {
-            that.CONFIG.container =   $('#' + that.CONFIG.placeholder_id);
+            that.CONFIG.container = $('#' + that.CONFIG.placeholder_id);
         }
         that.CONFIG.container.empty();
 
@@ -195,14 +191,6 @@ define(['jquery',
                 domaincode: this.CONFIG.domain
             }
         }));
-    };
-
-    FUIMDV.prototype.isRendered = function () {
-        return this.CONFIG.rendered;
-    };
-
-    FUIMDV.prototype.isNotRendered = function () {
-        return !this.CONFIG.rendered;
     };
 
     FUIMDV.prototype.dispose = function () {
