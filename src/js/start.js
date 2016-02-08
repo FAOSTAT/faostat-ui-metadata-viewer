@@ -21,7 +21,7 @@ define([
 
 /*                lang: 'en',
                 domain: 'QC',*/
-                addHeader: false
+                addHeader: true
 
             };
 
@@ -142,7 +142,8 @@ define([
 
             this.$CONTAINER.html(t(
                 $.extend(true, {}, i18nLabels, {
-                    data: sectors
+                    data: sectors,
+                    addHeader: this.o.addHeader
                 })
             ));
 
