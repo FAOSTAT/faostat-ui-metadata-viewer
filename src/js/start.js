@@ -88,6 +88,10 @@ define([
 
                 }
 
+            }).fail(function() {
+
+                self.noDataAvailablePreview();
+
             });
 
         };
@@ -114,7 +118,7 @@ define([
                     },
 
                 // sector code used in the object creation
-                    sectorCode = self.getSection(d.MetadataCode);
+                sectorCode = self.getSection(d.MetadataCode);
 
                 // get metadata structure from code
                 var structure = _.where(structures, {
@@ -126,7 +130,7 @@ define([
 
                 // check if returned something
                 if (structure.length <= 0) {
-                    log.error('MetadataViewer.createMetadataViewer; missing code in structure: ', d.MetadataCode);
+                    log.error('MetadataViewer.createMetadataViewer; missing MetadataCode in structures: ', d.MetadataCode, structures);
                 }
                 else {
 
