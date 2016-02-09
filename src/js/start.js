@@ -213,13 +213,16 @@ define([
 
             var lang = this.o.lang;
 
-            switch(lang) {
+            // TODO: the service works only in english
+/*            switch(lang) {
 
                 case 'es': return 'S';
                 case 'fr': return 'F';
                 default: return 'E';
 
-            }
+            }*/
+
+            return 'E';
 
         };
 
@@ -239,9 +242,9 @@ define([
             // initialize modal template if doesn't exists
             if (this.$MODAL.length <= 0) {
 
-                var html = $(templates).filter('#modal').html();
-                var t = Handlebars.compile(html);
-                log.info(i18nLabels)
+                var html = $(templates).filter('#modal').html(),
+                    t = Handlebars.compile(html);
+
                 $('body').append(t(i18nLabels));
 
                 this.$MODAL = $(s.MODAL);
@@ -260,7 +263,7 @@ define([
 
         MetadataViewer.prototype.destroy = function () {
 
-            log.warn('TODO');
+            log.warn('TODO MetadataViewer.destroy;');
 
         };
 
