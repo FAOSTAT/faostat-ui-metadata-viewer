@@ -1,22 +1,57 @@
 
-{{#if addHeader}}
-<br>
-<p>{{metadata_welcome}}</p>
-<h3>{{metadata}}</h3>
-<br>
-{{/if}}
-{{#each data}}
-    <h4 style="color:#337ab7;">{{this.code}}) {{this.label}}</h4>
-    {{#each subsections}}
-        <div class="row" style="margin-left:5px;font-size:13px;">
-            <div class="col-md-3">
-                <!--<p><small>{{this.code}}</small> {{this.label}}</p>-->
-                <p><b>{{this.label}}</b></p>
+
+<script type='text/x-handlebars-template' id='content'>
+    {{#if addHeader}}
+    <br>
+    <p>{{metadata_welcome}}</p>
+    <h3>{{metadata}}</h3>
+    <br>
+    {{/if}}
+    {{#each data}}
+        <h4 style="color:#337ab7;">{{this.code}}) {{this.label}}</h4>
+        {{#each subsections}}
+            <div class="row" style="margin-left:5px;font-size:13px;">
+                <div class="col-md-3">
+                    <!--<p><small>{{this.code}}</small> {{this.label}}</p>-->
+                    <p><b>{{this.label}}</b></p>
+                </div>
+                <div class="col-md-9">
+                    <p>{{this.text}}</p>
+                </div>
             </div>
-            <div class="col-md-9">
-                <p>{{this.text}}</p>
-            </div>
-        </div>
+        {{/each}}
+        <hr>
     {{/each}}
-    <hr>
-{{/each}}
+</script>
+
+<script type='text/x-handlebars-template' id='modal'>
+
+    <!-- Modal -->
+    <div id="fs-metadata-modal" style="display:none;" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">{{metadata}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div data-role="metadata"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{close}}</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</script>
+
+<script type='text/x-handlebars-template' id='no_data_available'>
+
+    <h4 style='padding-top:35px;text-align: center;'>{{{no_metadata_available}}}</h4>
+
+</script>
+
