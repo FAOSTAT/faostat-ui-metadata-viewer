@@ -16,12 +16,16 @@ define([
 
         var s = {
 
+                MODAL: '#fs-metadata-modal',
+                MODAL_METADATA_CONTAINER: '[data-role="metadata"]'
+
             },
             defaultOptions = {
 
-/*                lang: 'en',
-                domain: 'QC',*/
-                addHeader: true
+                /*                lang: 'en',
+                 domain: 'QC',*/
+                addHeader: true,
+                modal: false
 
             };
 
@@ -39,7 +43,6 @@ define([
 
             this.initVariables();
             this.initComponents();
-            this.bindEventListeners();
 
         };
 
@@ -51,14 +54,39 @@ define([
 
         MetadataViewer.prototype.initComponents = function () {
 
+            // if container is not defined go in any case modal
+            if( this.o.modal || this.$CONTAINER.length <= 0 ) {
+
+                this.showModal();
+
+            }
+            else {
+
+                this.createMetadataContainer();
+
+            }
+
+        };
+
+        MetadataViewer.prototype.createMetadataContainer = function () {
+
             var self = this;
 
             Q.all([this.getMetadataStructure(), this.getMetadataDomain()]).then(function(d) {
 
-                var structures = (typeof d[0] === 'string')? JSON.parse(d[0]): d[0],
-                    domainData = (typeof d[1] === 'string')? JSON.parse(d[1]): d[1];
+                // Check based on the service result
+                if ( d !== undefined && d !== null && d !== 'null' && d[1] !== 'null') {
 
-                self.createMetadataViewer(structures, domainData);
+                    var structures = (typeof d[0] === 'string') ? JSON.parse(d[0]) : d[0],
+                        domainData = (typeof d[1] === 'string') ? JSON.parse(d[1]) : d[1];
+
+                    self.createMetadataViewer(structures, domainData);
+
+                }else{
+
+                    self.noDataAvailablePreview();
+
+                }
 
             });
 
@@ -85,7 +113,7 @@ define([
                         text: d.MetadataText
                     },
 
-                    // sector code used in the object creation
+                // sector code used in the object creation
                     sectorCode = self.getSection(d.MetadataCode);
 
                 // get metadata structure from code
@@ -104,8 +132,8 @@ define([
 
                     structure = structure[0];
 
-/*                    log.info('\\\\\\\\\\\\\\\\\\\\');
-                    log.info("Structure", structure);*/
+                    /* log.info('\\\\\\\\\\\\\\\\\\\\');
+                     log.info("Structure", structure);*/
 
                     // create a sector section
                     if ( sectors.hasOwnProperty(sectorCode)) {
@@ -120,7 +148,7 @@ define([
                     subsector.label = structure.Label;
                     subsector.description = structure.Description;
 
-                    log.info(sector);
+                   // log.info(sector);
 
                     sector.subsections.push(subsector);
 
@@ -131,14 +159,15 @@ define([
 
             });
 
-/*
-            log.info("---------------------------");
-            log.info(sectors);
-*/
+            /*
+             log.info("---------------------------");
+             log.info(sectors);
+             */
 
             // rendering
 
-            var t = Handlebars.compile(templates);
+            var html = $(templates).filter('#content').html();
+            var t = Handlebars.compile(html);
 
             this.$CONTAINER.html(t(
                 $.extend(true, {}, i18nLabels, {
@@ -158,7 +187,10 @@ define([
         MetadataViewer.prototype.getMetadataStructure = function () {
             return Q($.ajax({
                 url: this.o.URL_METADATA_MODEL,
-                type: 'GET'
+                type: 'GET',
+                data: {
+                    lang: this.getFAOSTATLang()
+                }
             }));
         };
 
@@ -167,24 +199,64 @@ define([
                 url: this.o.URL_METADATA_DOMAIN,
                 type: 'GET',
                 data: {
-                    domaincode: this.o.domain
+                    domaincode: this.o.code,
+                    lang: this.getFAOSTATLang()
                 }
             }));
         };
 
+        MetadataViewer.prototype.getFAOSTATLang = function () {
+
+            var lang = this.o.lang;
+
+            switch(lang) {
+
+                case 'es': return 'S';
+                case 'fr': return 'F';
+                default: return 'E';
+
+            }
+
+        };
+
         MetadataViewer.prototype.noDataAvailablePreview = function () {
 
+            var html = $(templates).filter('#no_data_available').html(),
+                t = Handlebars.compile(html);
+
+            this.$CONTAINER.html(t(i18nLabels));
+
         };
 
-        MetadataViewer.prototype.bindEventListeners = function () {
+        MetadataViewer.prototype.showModal = function () {
 
-        };
+            this.$MODAL = $(s.MODAL);
 
-        MetadataViewer.prototype.unbindEventListeners = function () {
+            // initialize modal template if doesn't exists
+            if (this.$MODAL.length <= 0) {
+
+                var html = $(templates).filter('#modal').html();
+                var t = Handlebars.compile(html);
+                log.info(i18nLabels)
+                $('body').append(t(i18nLabels));
+
+                this.$MODAL = $(s.MODAL);
+
+            }
+
+            // create metadata container in the modal
+            this.o.addHeader = false; // TODO: force header at false?
+            this.$CONTAINER = this.$MODAL.find(s.MODAL_METADATA_CONTAINER);
+            this.createMetadataContainer();
+
+            // show modal
+            this.$MODAL.modal('show');
 
         };
 
         MetadataViewer.prototype.destroy = function () {
+
+            log.warn('TODO');
 
         };
 
