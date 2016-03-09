@@ -1,11 +1,17 @@
 
+<!-- TODO: remove inline style -->
 
 <script type='text/x-handlebars-template' id='content'>
     {{#if addHeader}}
-    <br>
-    <p>{{metadata_welcome}}</p>
-    <h3>{{metadata}}</h3>
-    <br>
+        <br>
+        <p>{{metadata_welcome}}</p>
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="pull-left">{{metadata}}</h3>
+                <button style='margin-top:15px;' type="button" class="btn btn-default pull-right" data-role="export">{{export_metadata}}Export Metadata</button>
+            </div>
+        </div>
+        <br>
     {{/if}}
     {{#each data}}
         <h4 style="color:#337ab7;">{{this.code}}) {{this.label}}</h4>
@@ -34,6 +40,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="pull-right btn btn-default" style='margin-right:15px;' data-role="export">{{export_metadata}}Export Metadata</button>
                     <h4 class="modal-title">{{metadata}}</h4>
                 </div>
                 <div class="modal-body">
