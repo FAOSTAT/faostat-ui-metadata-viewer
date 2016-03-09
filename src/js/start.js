@@ -17,7 +17,8 @@ define([
         var s = {
 
                 MODAL: '#fs-metadata-modal',
-                MODAL_METADATA_CONTAINER: '[data-role="metadata"]'
+                MODAL_METADATA_CONTAINER: '[data-role="metadata"]',
+                EXPORT_METADATA: '[data-role="export"]'
 
             },
             defaultOptions = {
@@ -38,11 +39,11 @@ define([
 
             this.o = $.extend(true, {}, defaultOptions, C, config);
 
-
             log.info("MetadataViewer.init; o:", this.o);
 
             this.initVariables();
             this.initComponents();
+            this.bindEventListeners();
 
         };
 
@@ -87,6 +88,9 @@ define([
                     self.noDataAvailablePreview();
 
                 }
+
+                // enable export
+                self.enableExport();
 
             }).fail(function() {
 
@@ -180,6 +184,9 @@ define([
                 })
             ));
 
+            // caching sectors
+            this.sectors = sectors;
+
         };
 
         MetadataViewer.prototype.getSection = function (metadataCode) {
@@ -261,7 +268,62 @@ define([
 
         };
 
+        MetadataViewer.prototype.enableExport = function() {
+
+            var self = this;
+
+            // TODO: make it nicer
+            this.$EXPORT_METADATA = this.$CONTAINER.find(s.EXPORT_METADATA);
+            if( this.$EXPORT_METADATA.length <= 0) {
+                this.$EXPORT_METADATA = this.$MODAL.find(s.EXPORT_METADATA);
+            }
+
+            this.$EXPORT_METADATA.off('click');
+            this.$EXPORT_METADATA.on('click', function() {
+
+                log.info("export metadata", self.sectors);
+
+                // TODO: move the logic from here
+
+                var d = [];
+
+                // TODO: multilanguage
+                d.push(["Subsection Code", "Section", "Subsection", "Metadata"]);
+
+                _.each(self.sectors, function(s, index) {
+                    if(s !== undefined) {
+                        if (s.hasOwnProperty('label')) {
+                            var sector = s.label;
+                            _.each(s.subsections, function (sub) {
+                                d.push([sub.code, sector, sub.label, sub.text]);
+                            });
+                        }
+                    }
+
+                });
+
+                // TODO: leave it here or use the Common FAOSTAT Export?
+                amplify.publish(C.EVENTS.EXPORT_MATRIX_DATA, { data: d});
+
+            });
+
+        };
+
+        MetadataViewer.prototype.bindEventListeners = function () {
+
+        };
+
+        MetadataViewer.prototype.unbindEventListeners = function () {
+
+            this.$EXPORT_METADATA.off('click');
+
+            log.warn('TODO MetadataViewer.destroy;');
+
+        };
+
         MetadataViewer.prototype.destroy = function () {
+
+            this.unbindEventListeners();
 
             log.warn('TODO MetadataViewer.destroy;');
 
