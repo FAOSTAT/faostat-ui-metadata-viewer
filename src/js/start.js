@@ -2,15 +2,22 @@
 define([
         'jquery',
         'loglevel',
-        'fs-m-v/config/Config',
+        'config/Config',
+        'config/Events',
+        //'fs-m-v/config/Config',
         'text!fs-m-v/html/templates.hbs',
         'i18n!fs-m-v/nls/translate',
         'handlebars',
         'underscore',
         'q',
+        'faostatapiclient',
+        //'jspdf',
         'amplify'
+
     ],
-    function ($, log, C, templates, i18nLabels, Handlebars, _, Q) {
+    function ($, log, C, E, templates, i18nLabels, Handlebars, _, Q, API
+             // jsPDF
+    ) {
 
         'use strict';
 
@@ -23,8 +30,9 @@ define([
             },
             defaultOptions = {
 
-                /*                lang: 'en',
-                 domain: 'QC',*/
+                /* lang: 'en',
+                  code: 'QC',
+               */
                 addHeader: true,
                 modal: false
 
@@ -38,6 +46,7 @@ define([
         MetadataViewer.prototype.init = function (config) {
 
             this.o = $.extend(true, {}, defaultOptions, C, config);
+            this.api = new API();
 
             log.info("MetadataViewer.init; o:", this.o);
 
@@ -73,24 +82,22 @@ define([
 
             var self = this;
 
-            Q.all([this.getMetadataStructure(), this.getMetadataDomain()]).then(function(d) {
+            this.api.metadata({
+                datasource: C.DATASOURCE,
+                lang: this.o.lang,
+                domain_code: this.o.code
+            }).then(function(d) {
 
                 // Check based on the service result
-                if ( d !== undefined && d !== null && d !== 'null' && d[1] !== 'null') {
+                if ( d !== undefined && d !== null && d.data.length > 0) {
 
-                    var structures = (typeof d[0] === 'string') ? JSON.parse(d[0]) : d[0],
-                        domainData = (typeof d[1] === 'string') ? JSON.parse(d[1]) : d[1];
+                    self.createMetadataViewer(d);
 
-                    self.createMetadataViewer(structures, domainData);
-
-                }else{
+                } else {
 
                     self.noDataAvailablePreview();
 
                 }
-
-                // enable export
-                self.enableExport();
 
             }).fail(function() {
 
@@ -100,136 +107,56 @@ define([
 
         };
 
-        MetadataViewer.prototype.createMetadataViewer = function (structures, domainData) {
+        MetadataViewer.prototype.createMetadataViewer = function (d) {
 
-            var sectors = [],
+            var data = d.data,
+                metadata = {},
                 self = this;
 
-            //log.info(structures);
+            // grouping  by group_code
+            var groups = _.groupBy(data, 'metadata_group_code');
 
-            // for each domain data merge with the structure
-            _.each(domainData, function(d) {
+            _.each(groups, function(g) {
 
-                var sector = {
-                        label: null,
-                        code: null,
-                        subsections: [
-                        ]
-                    },
-                    subsector = {
-                        code: d.MetadataCode,
-                        text: d.MetadataText
-                    },
+                _.each(g, function(m) {
 
-                // sector code used in the object creation
-                sectorCode = self.getSection(d.MetadataCode);
-
-                // get metadata structure from code
-                var structure = _.where(structures, {
-                    MetadataCode: d.MetadataCode
-                });
-
-                //log.info(d);
-
-
-                // check if returned something
-                if (structure.length <= 0) {
-                    log.error('MetadataViewer.createMetadataViewer; missing MetadataCode in structures: ', d.MetadataCode, structures);
-                }
-                else {
-
-                    structure = structure[0];
-
-                    /* log.info('\\\\\\\\\\\\\\\\\\\\');
-                     log.info("Structure", structure);*/
-
-                    // create a sector section
-                    if ( sectors.hasOwnProperty(sectorCode)) {
-                        sector = sectors[sectorCode];
+                    if (!metadata.hasOwnProperty(m.metadata_group_code)) {
+                        metadata[m.metadata_group_code] = {
+                            code: m.metadata_group_code,
+                            label: m.metadata_group_label,
+                            subsections: []
+                        };
                     }
 
-                    // sector
-                    sector.code = sectorCode;
-                    sector.label = structure.NameMacroGroup;
+                    metadata[m.metadata_group_code].subsections.push({
+                        code: m.metadata_code,
+                        label: m.metadata_label,
+                        text: m.metadata_text
+                    });
 
-                    // adding the description to the subsector
-                    subsector.label = structure.Label;
-                    subsector.description = structure.Description;
-
-                   // log.info(sector);
-
-                    sector.subsections.push(subsector);
-
-                    // adding to the sectors
-                    sectors[sectorCode] = sector;
-
-                }
-
+                });
             });
 
-            /*
-             log.info("---------------------------");
-             log.info(sectors);
-             */
+            // caching metadata (used in export)
+            this.metadata = metadata;
 
             // rendering
+            //log.info(sections)
 
             var html = $(templates).filter('#content').html();
             var t = Handlebars.compile(html);
 
             this.$CONTAINER.html(t(
-                $.extend(true, {}, i18nLabels, {
-                    data: sectors,
-                    addHeader: this.o.addHeader
-                })
+                $.extend(true, {},
+                    i18nLabels,
+                    {
+                        data: metadata,
+                        addHeader: this.o.addHeader
+                    })
             ));
 
-            // caching sectors
-            this.sectors = sectors;
-
-        };
-
-        MetadataViewer.prototype.getSection = function (metadataCode) {
-
-            return parseInt(metadataCode).toString();
-
-        };
-
-        MetadataViewer.prototype.getMetadataStructure = function () {
-            return Q($.ajax({
-                url: this.o.URL_METADATA_MODEL,
-                type: 'GET',
-                data: {
-                    lang: this.getFAOSTATLang()
-                }
-            }));
-        };
-
-        MetadataViewer.prototype.getMetadataDomain = function () {
-            return Q($.ajax({
-                url: this.o.URL_METADATA_DOMAIN,
-                type: 'GET',
-                data: {
-                    domaincode: this.o.code,
-                    lang: this.getFAOSTATLang()
-                }
-            }));
-        };
-
-        MetadataViewer.prototype.getFAOSTATLang = function () {
-
-            var lang = this.o.lang;
-
-            // TODO: the service works only in english
-/*            switch(lang) {
-
-                case 'es': return 'S';
-                case 'fr': return 'F';
-                default: return 'E';
-
-            }*/
-
-            return 'E';
+            // enable export
+            self.enableExport();
 
         };
 
@@ -278,6 +205,8 @@ define([
                 this.$EXPORT_METADATA = this.$MODAL.find(s.EXPORT_METADATA);
             }
 
+            log.info(this.$EXPORT_METADATA.length);
+
             this.$EXPORT_METADATA.off('click');
             this.$EXPORT_METADATA.on('click', function() {
 
@@ -290,12 +219,12 @@ define([
                 // TODO: multilanguage
                 d.push(["Subsection Code", "Section", "Subsection", "Metadata"]);
 
-                _.each(self.sectors, function(s, index) {
+                _.each(self.metadata, function(s, index) {
                     if(s !== undefined) {
                         if (s.hasOwnProperty('label')) {
                             var sector = s.label;
                             _.each(s.subsections, function (sub) {
-                                d.push([sub.code, sector, sub.label, sub.text]);
+                                d.push([sub.code, sector, sub.label, sub.text || ""]);
                             });
                         }
                     }
@@ -303,7 +232,20 @@ define([
                 });
 
                 // TODO: leave it here or use the Common FAOSTAT Export?
-                amplify.publish(C.EVENTS.EXPORT_MATRIX_DATA, { data: d});
+                amplify.publish(E.EXPORT_MATRIX_DATA, { data: d });
+
+                /*
+
+                var doc = new jsPDF();
+                var specialElementHandlers = {
+                    '#editor': function(element, renderer){
+                        return true;
+                    }
+                };
+                doc.fromHTML(self.$CONTAINER.get(0));
+                doc.save('Test.pdf');
+
+                */
 
             });
 
