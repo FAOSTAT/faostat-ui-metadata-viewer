@@ -8,7 +8,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <h3 class="pull-left">{{metadata}}</h3>
-                <button style='margin-top:15px;' type="button" class="btn btn-primary pull-right" data-role="export">{{export_metadata}}Export Metadata</button>
+                <button style='margin-top:15px;' type="button" class="btn btn-primary pull-right" data-role="export">
+                    <i class="fa fa-download"></i> {{download_metadata}}
+                </button>
             </div>
         </div>
         <br>
@@ -40,7 +42,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <button type="button" class="pull-right btn btn-primary" style='margin-right:15px;' data-role="export">{{export_metadata}}Export Metadata</button>
+                    <button type="button" class="pull-right btn btn-primary" style='margin-right:15px;' data-role="export">
+                        <i class="fa fa-download"></i> {{download_metadata}}Download Metadata
+                    </button>
                     <h4 class="modal-title">{{metadata}}</h4>
                 </div>
                 <div class="modal-body">
