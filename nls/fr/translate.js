@@ -1,5 +1,5 @@
 define({
-    metadata: 'Metadata',
+    metadata: 'Métadonnées',
     close: 'Close',
     courtesy: 'No data available for the provided resource ID.',
     export_pdf_label: 'Export to PDF',
