@@ -4,23 +4,19 @@
 <script type='text/x-handlebars-template' id='content'>
     {{#if addHeader}}
         <br>
-        <p>{{metadata_welcome}}</p>
         <div class="row">
             <div class="col-lg-12">
-                <h3 class="pull-left">{{metadata}}</h3>
                 <button style='margin-top:15px;' type="button" class="btn btn-primary pull-right" data-role="export">
                     <i class="fa fa-download"></i> {{download_metadata}}
                 </button>
             </div>
         </div>
-        <br>
     {{/if}}
     {{#each data}}
         <h4 style="color:#337ab7;">{{this.code}}) {{this.label}}</h4>
         {{#each subsections}}
             <div class="row" style="margin-left:5px;font-size:13px;">
                 <div class="col-sm-3">
-                    <!--<p><small>{{this.code}}</small> {{this.label}}</p>-->
                     <p><b>{{this.label}}</b></p>
                 </div>
                 <div class="col-sm-9">

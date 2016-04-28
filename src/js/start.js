@@ -34,21 +34,27 @@ define([
                   code: 'QC',
                */
                 addHeader: true,
-                modal: false
+                modal: false,
+
+                metadata_sections: {
+                    description: "3.1",
+                    contacts: "1.3",
+                    organization: "1.1"
+                }
 
             };
 
-        function MetadataViewer() {
+        function MetadataViewer(config) {
+
+            this.o = $.extend(true, {}, defaultOptions, config);
+            this.api = new API();
+
+            log.info("MetadataViewer.init; o:", this.o);
 
             return this;
         }
 
-        MetadataViewer.prototype.init = function (config) {
-
-            this.o = $.extend(true, {}, defaultOptions, C, config);
-            this.api = new API();
-
-            log.info("MetadataViewer.init; o:", this.o);
+        MetadataViewer.prototype.render = function (config) {
 
             this.initVariables();
             this.initComponents();
@@ -78,15 +84,21 @@ define([
 
         };
 
+        MetadataViewer.prototype._getMetadata = function () {
+
+            return Q(this.api.metadata({
+                datasource: C.DATASOURCE,
+                lang: this.o.lang,
+                domain_code: this.o.code
+            }));
+
+        };
+
         MetadataViewer.prototype.createMetadataContainer = function () {
 
             var self = this;
 
-            this.api.metadata({
-                datasource: C.DATASOURCE,
-                lang: this.o.lang,
-                domain_code: this.o.code
-            }).then(function(d) {
+            this._getMetadata().then(function(d) {
 
                 // Check based on the service result
                 if ( d !== undefined && d !== null && d.data.length > 0) {
@@ -205,8 +217,6 @@ define([
                 this.$EXPORT_METADATA = this.$MODAL.find(s.EXPORT_METADATA);
             }
 
-            log.info(this.$EXPORT_METADATA.length);
-
             this.$EXPORT_METADATA.off('click');
             this.$EXPORT_METADATA.on('click', function() {
 
@@ -248,6 +258,129 @@ define([
                 */
 
             });
+
+        };
+
+        MetadataViewer.prototype._getSection = function(data, section) {
+
+            var m = _.find(data, function(v) {
+                return v.metadata_code === section;
+            });
+
+            return m;
+
+        };
+
+        MetadataViewer.prototype.getDescription = function() {
+
+            var deferred = Q.defer(),
+                self = this;
+
+            this._getMetadata().then(function(d) {
+
+                var metadata_section = self.o.metadata_sections.description,
+                    m = self._getSection(d.data, metadata_section);
+
+                log.info(m)
+
+                if ( m ) {
+
+                    deferred.resolve({
+                        code: [metadata_section],
+                        text: m.metadata_text,
+                        fullSection: m
+                    });
+
+                } else {
+
+                    deferred.resolve();
+
+                }
+
+            }).fail(function(e){
+
+                log.error("MetadataViewer.getDescription; error:", e);
+
+                // TODO: check the error
+                deferred.reject(new Error(e));
+
+            });
+
+            return deferred.promise;
+            
+        };
+
+        MetadataViewer.prototype.getContacts = function() {
+
+            var deferred = Q.defer(),
+                self = this;
+
+            this._getMetadata().then(function(d) {
+
+                var metadata_section = self.o.metadata_sections.contacts,
+                    m = self._getSection(d.data, metadata_section);
+
+                if ( m ) {
+
+                    deferred.resolve({
+                        code: [metadata_section],
+                        text: m.metadata_text,
+                        fullSection: m
+                    });
+
+                } else {
+
+                    deferred.resolve();
+
+                }
+
+            }).fail(function(e){
+
+                log.error("MetadataViewer.getContacts; error:", e);
+
+                // TODO: check the error
+                deferred.reject(new Error(e));
+
+            });
+
+            return deferred.promise;
+
+        };
+
+        MetadataViewer.prototype.getOrganization = function() {
+
+            var deferred = Q.defer(),
+                self = this;
+
+            this._getMetadata().then(function(d) {
+
+                var metadata_section = self.o.metadata_sections.organization,
+                    m = self._getSection(d.data, metadata_section);
+
+                if ( m ) {
+
+                    deferred.resolve({
+                        code: [metadata_section],
+                        text: m.metadata_text,
+                        fullSection: m
+                    });
+
+                } else {
+
+                    deferred.resolve();
+
+                }
+
+            }).fail(function(e){
+
+                log.error("MetadataViewer.getOrganization; error:", e);
+
+                // TODO: check the error
+                deferred.reject(new Error(e));
+
+            });
+
+            return deferred.promise;
 
         };
 
