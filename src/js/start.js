@@ -4,6 +4,7 @@ define([
         'loglevel',
         'config/Config',
         'config/Events',
+        'config/Analytics',
         //'fs-m-v/config/Config',
         'text!fs-m-v/html/templates.hbs',
         'i18n!fs-m-v/nls/translate',
@@ -15,7 +16,7 @@ define([
         'amplify'
 
     ],
-    function ($, log, C, E, templates, i18nLabels, Handlebars, _, Q, API
+    function ($, log, C, E, A, templates, i18nLabels, Handlebars, _, Q, API
              // jsPDF
     ) {
 
@@ -244,6 +245,10 @@ define([
                 // TODO: leave it here or use the Common FAOSTAT Export?
                 amplify.publish(E.EXPORT_MATRIX_DATA, { data: d });
 
+                // log event to analytics
+                self._analyticsDownloadCSV();
+
+
                 /*
 
                 var doc = new jsPDF();
@@ -280,8 +285,6 @@ define([
 
                 var metadata_section = self.o.metadata_sections.description,
                     m = self._getSection(d.data, metadata_section);
-
-                log.info(m)
 
                 if ( m ) {
 
@@ -381,6 +384,17 @@ define([
             });
 
             return deferred.promise;
+
+        };
+
+        MetadataViewer.prototype._analyticsDownloadCSV = function () {
+            
+            // this could be a double counting in the events. but will track the metadata downlaoded
+            amplify.publish(E.GOOGLE_ANALYTICS_EVENT, {
+                category: A.metadata.download_csv.category,
+                action: A.metadata.download_csv.action,
+                label: this.o.code
+            });
 
         };
 
