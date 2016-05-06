@@ -404,7 +404,9 @@ define([
 
         MetadataViewer.prototype.unbindEventListeners = function () {
 
-            this.$EXPORT_METADATA.off('click');
+            if (this.$EXPORT_METADATA) {
+                this.$EXPORT_METADATA.off('click');
+            }
 
             log.warn('TODO MetadataViewer.destroy;');
 
