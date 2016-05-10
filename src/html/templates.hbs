@@ -3,11 +3,11 @@
 
 <script type='text/x-handlebars-template' id='content'>
     {{#if addHeader}}
-        <div class="row">
+        <div class="row" style="position:absolute; top:10; right:0;">
             <div class="col-lg-12">
-                <button style='margin-top:15px;' type="button" class="btn btn-primary waves-effect waves-light pull-right" data-role="export">
-                    <i class="fa fa-download"></i> {{download_metadata}}
-                </button>
+                <div class="pull-right" style="position:absolute; top:10; right:0;">
+                    <a class="btn-floating waves-effect waves-light btn-default" data-role="export"><i class="material-icons">file_download</i> </a>
+                </div>
             </div>
         </div>
     {{/if}}
@@ -40,6 +40,9 @@
                     <button type="button" class="pull-right btn btn-primary" style='margin-right:15px;' data-role="export">
                         <i class="fa fa-download"></i> {{download_metadata}}
                     </button>
+<!--                    <div class="pull-right">
+                        <a class="pull-right btn-floating waves-effect waves-light btn-default" data-role="export"><i class="material-icons">file_download</i> </a>
+                    </div>-->
                     <h4 class="modal-title">{{metadata}}</h4>
                 </div>
                 <div class="modal-body">
