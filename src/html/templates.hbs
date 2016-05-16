@@ -37,9 +37,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <button type="button" class="pull-right btn btn-primary" style='margin-right:15px;' data-role="export">
+                    <div class="pull-right">
+                        <a class="btn-floating waves-effect waves-light btn-default" data-role="export"><i class="material-icons">file_download</i> </a>
+                    </div>
+<!--                    <button type="button" class="pull-right btn btn-primary" style='margin-right:15px;' data-role="export">
                         <i class="fa fa-download"></i> {{download_metadata}}
-                    </button>
+                    </button>-->
 <!--                    <div class="pull-right">
                         <a class="pull-right btn-floating waves-effect waves-light btn-default" data-role="export"><i class="material-icons">file_download</i> </a>
                     </div>-->
@@ -49,7 +52,7 @@
                     <div class="pre-scrollable" style="overflow-x: hidden;" data-role="metadata"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{close}}</button>
+                    <button type="button" class="btn btn-link" data-dismiss="modal">{{close}}</button>
                 </div>
             </div>
 
