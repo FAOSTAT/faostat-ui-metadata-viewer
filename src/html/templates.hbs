@@ -1,12 +1,15 @@
 
 <!-- TODO: remove inline style -->
 
-<script type='text/x-handlebars-template' id='content'>
+<template id='content'>
+
     {{#if addHeader}}
         <div class="row">
             <div class="col-lg-12">
                 <div class="pull-right" >
-                    <a class="btn-floating waves-effect waves-light btn-default" data-role="export"><i class="material-icons">file_download</i> </a>
+                    <a class="btn-floating waves-effect waves-light btn-default" data-role="export">
+                        <i class="material-icons">file_download</i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -25,9 +28,10 @@
         {{/each}}
         <hr>
     {{/each}}
-</script>
 
-<script type='text/x-handlebars-template' id='modal'>
+</template>
+
+<template id='modal'>
 
     <!-- Modal -->
     <div id="fs-metadata-modal" style="display:none;" class="modal fade" role="dialog">
@@ -38,36 +42,30 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <div class="pull-right">
-                        <a class="btn-floating waves-effect waves-light btn-default" data-role="export"><i class="material-icons">file_download</i> </a>
+                        <a class="btn-floating waves-effect waves-light btn-default" data-role="export">
+                            <i class="material-icons">file_download</i>
+                        </a>
                     </div>
-<!--                    <button type="button" class="pull-right btn btn-primary" style='margin-right:15px;' data-role="export">
-                        <i class="fa fa-download"></i> {{download_metadata}}
-                    </button>-->
-<!--                    <div class="pull-right">
-                        <a class="pull-right btn-floating waves-effect waves-light btn-default" data-role="export"><i class="material-icons">file_download</i> </a>
-                    </div>-->
                     <h4 class="modal-title">{{metadata}}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="pre-scrollable" style="overflow-x: hidden;" data-role="metadata"></div>
                 </div>
                 <div class="modal-footer">
-
                     <a class="btn btn-link waves-effect" target="_blank" data-dismiss="modal">
                         <i class="material-icons left">close</i>{{close}}
                     </a>
-
                 </div>
             </div>
 
         </div>
     </div>
 
-</script>
+</template>
 
-<script type='text/x-handlebars-template' id='no_data_available'>
+<template id='no_data_available'>
 
     <h4 style='padding-top:35px;text-align: center;'>{{{no_metadata_available}}}</h4>
 
-</script>
+</template>
 
