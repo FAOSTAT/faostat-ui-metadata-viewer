@@ -2,7 +2,6 @@
 define([
         'jquery',
         'loglevel',
-        'config/Config',
         'config/Events',
         'config/Analytics',
         //'fs-m-v/config/Config',
@@ -16,7 +15,7 @@ define([
         'amplify'
 
     ],
-    function ($, log, C, E, A, templates, i18nLabels, Handlebars, _, Q, API
+    function ($, log, E, A, templates, i18nLabels, Handlebars, _, Q, API
              // jsPDF
     ) {
 
@@ -48,7 +47,6 @@ define([
         function MetadataViewer(config) {
 
             this.o = $.extend(true, {}, defaultOptions, config);
-            this.api = new API();
 
             log.info("MetadataViewer.init; o:", this.o);
 
@@ -87,9 +85,7 @@ define([
 
         MetadataViewer.prototype._getMetadata = function () {
 
-            return Q(this.api.metadata({
-                datasource: C.DATASOURCE,
-                lang: this.o.lang,
+            return Q(API.metadata({
                 domain_code: this.o.code
             }));
 
