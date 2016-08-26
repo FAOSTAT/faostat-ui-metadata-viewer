@@ -45,15 +45,16 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <div class="pull-right">
-                        <a class="btn-floating waves-effect waves-light btn-default" data-role="export">
+                        <a class="btn-floating pull-right waves-effect waves-light btn-default fs-metadata-modal-export-button" data-role="export">
                             <i class="material-icons">file_download</i>
                         </a>
-                    </div>
-                    <h4 class="modal-title">{{metadata}}</h4>
+                    <h4 class="fs-metadata-modal-title">
+                        <i class="material-icons left">info_outline</i>
+                        {{metadata}} {{domain_label}}
+                    </h4>
                 </div>
                 <div class="modal-body">
-                    <div class="fs-metadata-modal" data-role="metadata"></div>
+                    <div class="fs-metadata-modal-content" data-role="metadata"></div>
                 </div>
                 <div class="modal-footer">
                     <a class="btn btn-link waves-effect" target="_blank" data-dismiss="modal">
