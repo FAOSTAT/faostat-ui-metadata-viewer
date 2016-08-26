@@ -3,31 +3,35 @@
 
 <template id='content'>
 
-    {{#if addHeader}}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="pull-right" >
-                    <a class="btn-floating waves-effect waves-light btn-default" data-role="export">
-                        <i class="material-icons">file_download</i>
-                    </a>
+    <div class="fs-metadata">
+        {{#if addHeader}}
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="pull-right" >
+                        <a class="btn-floating waves-effect waves-light btn-default" data-role="export">
+                            <i class="material-icons">file_download</i>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    {{/if}}
-    {{#each data}}
-        <h4 style="color:#337ab7;">{{this.code}}) {{this.label}}</h4>
-        {{#each subsections}}
-            <div class="row" style="margin-left:5px;font-size:13px;">
-                <div class="col-sm-3">
-                    <p><b>{{this.label}}</b></p>
-                </div>
-                <div class="col-sm-9">
-                    <p>{{{this.text}}}</p>
-                </div>
+        {{/if}}
+        {{#each data}}
+            <div class="fs-metadata-content">
+                <h4 class="fs-metadata-title">{{this.code}}) {{this.label}}</h4>
+                {{#each subsections}}
+                    <div class="row fs-metadata-row">
+                        <div class="col-sm-3">
+                            <p class="fs-metadata-code">{{this.label}}</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="fs-metadata-description">{{{this.text}}}</p>
+                        </div>
+                    </div>
+                {{/each}}
+                <hr>
             </div>
         {{/each}}
-        <hr>
-    {{/each}}
+
 
 </template>
 
@@ -49,7 +53,7 @@
                     <h4 class="modal-title">{{metadata}}</h4>
                 </div>
                 <div class="modal-body">
-                    <div style="overflow-x: hidden; max-height: calc(100vh - 250px);" data-role="metadata"></div>
+                    <div class="fs-metadata-modal" data-role="metadata"></div>
                 </div>
                 <div class="modal-footer">
                     <a class="btn btn-link waves-effect" target="_blank" data-dismiss="modal">
@@ -65,7 +69,7 @@
 
 <template id='no_data_available'>
 
-    <h4 style='padding-top:35px;text-align: center;'>{{{no_metadata_available}}}</h4>
+    <h4 class='fs-metadata-no-data-available'style='padding-top:35px;text-align: center;'>{{{no_metadata_available}}}</h4>
 
 </template>
 
