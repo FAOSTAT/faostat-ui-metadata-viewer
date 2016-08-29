@@ -404,15 +404,13 @@ define([
                 this.$EXPORT_METADATA.off('click');
             }
 
-            log.warn('TODO MetadataViewer.destroy;');
-
         };
 
         MetadataViewer.prototype.destroy = function () {
 
             this.unbindEventListeners();
 
-            log.warn('TODO MetadataViewer.destroy;');
+            log.warn('MetadataViewer.destroy; handle destroy');
 
         };
 
