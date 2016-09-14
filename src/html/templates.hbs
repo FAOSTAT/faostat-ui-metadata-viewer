@@ -28,7 +28,10 @@
                         </div>
                     </div>
                 {{/each}}
-                <hr>
+                {{#unless @last }}
+                    <hr>
+                {{/unless}}
+
             </div>
         {{/each}}
     </div>
