@@ -200,7 +200,7 @@ define([
             this.createMetadataContainer();
 
             // show modal
-            this.$MODAL.modal('show');
+            this.$MODAL.modal({keyboard: true});
 
         };
 
