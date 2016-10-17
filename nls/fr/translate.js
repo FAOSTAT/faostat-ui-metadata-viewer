@@ -1,6 +1,5 @@
 define({
-    metadata: 'Metadata',
-    close: 'Close',
-    no_metadata_available: 'There is no metadata available for this domain yet.<br>We apologize for any inconvenience.',
-
+    metadata: 'Métadonnées',
+    close: 'Fermer',
+    no_metadata_available: "Il n’y a pas de métadonnées disponibles pour ce domaine yet.<br>Nous nous excusons pour tout inconvénient.",
 });
